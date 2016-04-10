@@ -188,7 +188,17 @@ See the [conventional-changelog-writer](https://github.com/conventional-changelo
 
 Finalize context is used for generating above context.
 
-**NOTE:** If you overwrite this value the above context defaults will be gone.
+**NOTE:** If you overwrite this value the above context defaults will be gone. If you want to modify the result based on the default function, you could do:
+
+```js
+finalizeContext: function() {
+  var newContext = this.defaultFinalizeContext.apply(this, arguments);
+
+  // Modify newContext
+
+  return newContext;
+}
+```
 
 ##### reverse
 
