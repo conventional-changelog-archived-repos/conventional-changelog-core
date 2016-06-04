@@ -135,6 +135,7 @@ describe('conventionalChangelogCore', function() {
       }));
   });
 
+  // TODO: This tests implementation details of git-raw-commits and should be moved there / dropped
   it('should spit out some debug info', function(done) {
     var first = true;
 
@@ -142,7 +143,7 @@ describe('conventionalChangelogCore', function() {
       debug: function(cmd) {
         if (first) {
           first = false;
-          expect(cmd).to.equal('Your git-log command is:\ngit log --format="%B%n-hash-%n%H%n-gitTags-%n%d%n-committerDate-%n%ci%n------------------------ >8 ------------------------" "v0.1.0..HEAD" --no-merges');
+          expect(cmd).to.include('Your git-log command is:');
           done();
         }
       }
