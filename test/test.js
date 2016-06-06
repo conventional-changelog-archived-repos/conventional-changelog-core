@@ -135,7 +135,6 @@ describe('conventionalChangelogCore', function() {
       }));
   });
 
-  // TODO: This tests implementation details of git-raw-commits and should be moved there / dropped
   it('should spit out some debug info', function(done) {
     var first = true;
 
