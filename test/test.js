@@ -870,6 +870,33 @@ describe('conventionalChangelogCore', function() {
         }));
     });
 
+    it('should not prefix with a "v"', function(done) {
+      var i = 0;
+
+      conventionalChangelogCore({
+        releaseCount: 0
+      }, {
+        version: '3.0.0'
+      }, {}, {}, {
+        mainTemplate: '{{previousTag}}...{{currentTag}}'
+      })
+        .pipe(through(function(chunk, enc, cb) {
+          chunk = chunk.toString();
+
+          if (i === 0) {
+            expect(chunk).to.equal(tail + '...2.0.0');
+          } else if (i === 1) {
+            expect(chunk).to.equal('2.0.0...3.0.0');
+          }
+
+          i++;
+          cb();
+        }, function() {
+          expect(i).to.equal(2);
+          done();
+        }));
+    });
+
     it('should not link compare if previousTag is not truthy', function(done) {
       var i = 0;
 
@@ -983,8 +1010,8 @@ describe('conventionalChangelogCore', function() {
 
   describe('unreleased', function() {
     it('should not output unreleased', function(done) {
-      gitDummyCommit();
       shell.exec('git tag v1.0.0');
+      gitDummyCommit('something unreleased yet :)');
 
       conventionalChangelogCore({}, {
         version: '1.0.0'
@@ -997,9 +1024,6 @@ describe('conventionalChangelogCore', function() {
     });
 
     it('should output unreleased', function(done) {
-      gitDummyCommit();
-      gitDummyCommit('something unreleased yet :)');
-
       conventionalChangelogCore({
         outputUnreleased: true
       }, {
