@@ -419,6 +419,30 @@ describe('conventionalChangelogCore', function() {
     }));
   });
 
+  it('should use custom referenceActions if a `referenceActions` is provided in the `options.config.parserOpts` object', function(done) {
+    gitDummyCommit('Custom prefix closes #42');
+    gitDummyCommit('Old prefix #71');
+
+    conventionalChangelogCore({
+      config: {
+        parserOpts: null
+      }}, {
+      host: 'github',
+      owner: 'b',
+      repository: 'a'
+    }, {}, {
+      issuePrefixes: ['#']
+    }).pipe(through(function(chunk) {
+      chunk = chunk.toString();
+
+      expect(chunk).to.include('](github/b/a/commit/');
+      expect(chunk).to.include('closes [#42](github/b/a/issues/42)');
+      expect(chunk).to.include('closes [#71](github/b/a/issues/71)');
+
+      done();
+    }));
+  });
+
   it('should read github\'s host configs', function(done) {
     preparing(5);
 
