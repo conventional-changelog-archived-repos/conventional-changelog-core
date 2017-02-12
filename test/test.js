@@ -998,6 +998,42 @@ describe('conventionalChangelogCore', function() {
           done();
         }));
     });
+
+    it('should handle tags without a prefix', function(done) {
+      shell.exec('git tag -d v0.0.1');
+      shell.exec('git tag -d v2.0.0');
+      shell.exec('git tag 0.0.1 ' + tail);
+      shell.exec('git tag 0.0.2');
+      var i = 0;
+
+      conventionalChangelogCore({
+        releaseCount: 0
+      }, {
+        version: '0.0.3'
+      }, {}, {}, {
+        mainTemplate: '{{previousTag}}...{{currentTag}}',
+        transform: function() {
+          return null;
+        }
+      })
+        .pipe(through(function(chunk, enc, cb) {
+          chunk = chunk.toString();
+
+          if (i === 0) {
+            expect(chunk).to.equal('0.0.2...0.0.3');
+          } else if (i === 1) {
+            expect(chunk).to.equal('0.0.1...0.0.2');
+          } else if (i === 2) {
+            expect(chunk).to.equal('...0.0.1');
+          }
+
+          i++;
+          cb();
+        }, function() {
+          expect(i).to.equal(3);
+          done();
+        }));
+    });
   });
 
   describe('config', function() {
